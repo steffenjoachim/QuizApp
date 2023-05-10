@@ -66,3 +66,25 @@ body{
     margin-bottom: 16px;
     width: 100%;
 }
+
+.start-Btn{
+    background-color: rgb(11, 94, 215);
+    color: white;
+    margin-top: 16px;
+}
+
+.start-Btn:hover{
+    background: rgb(13, 111, 255);
+    color: white;
+}
+
+@media(max-width: 700px) {
+
+    .quiz-card{
+        width: 20rem; 
+    }
+
+    .container{
+        min-width: 0;
+    }
+}

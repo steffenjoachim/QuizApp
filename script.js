@@ -43,8 +43,9 @@ let questions = [
 ]
 
 let currentQuestion = 0;
-
 let rightQuestions = 0;
+let audio_success = new Audio('./audio/success.wav');
+let audio_fail = new Audio('./audio/fail.wav');
 
 function init() {
     document.getElementById('numberQuestionsTotal').innerHTML = questions.length;
@@ -53,30 +54,15 @@ function init() {
 
 
 function showQuestions() {
-    if (currentQuestion >= questions.length) {
-
-        document.getElementById('quizEnded').classList.remove('d-none');
-        document.getElementById('quizStandard').classList.add('d-none');
-        document.getElementById('totalAnswers').innerHTML = questions.length;
-        document.getElementById('progress').classList.add('d-none');
+    if (gameOver()) {
+        showEndScreen();
     } else {
-
-        let percent = currentQuestion / questions.length;
-        // Math.round wird in diesem Beispiel nicht benötigt, aber wenn sich die Anzahl der Fragen ändern würde:
-        percent = Math.round( percent * 100);
-        document.getElementById('progress-bar').innerHTML = `${percent} %`
-        document.getElementById('progress-bar').style = `width: ${percent}%`
-
-        console.log(percent);
-
-        let question = questions[currentQuestion];
-
-        document.getElementById('question').innerHTML = question['question'];
-        document.getElementById('answer1').innerHTML = question['answer-1'];
-        document.getElementById('answer2').innerHTML = question['answer-2'];
-        document.getElementById('answer3').innerHTML = question['answer-3'];
-        document.getElementById('answer4').innerHTML = question['answer-4'];
+        showPlayScreen();
     }
+}
+
+function gameOver(){
+    return currentQuestion >= questions.length
 }
 
 function answer(selection) {
@@ -85,16 +71,21 @@ function answer(selection) {
 
     let idOfRightAnswer = `answer${question['right-answer']}`
     
-    if (selectedQuestionNumber == question['right-answer']) {
+    if (rightQuestinSelected(selectedQuestionNumber, question)) {
         document.getElementById(selection).parentNode.classList.add('bg-success');
         rightQuestions = rightQuestions + 1;
-
+        audio_success.play();
         showRightAnsweredQuestions(rightQuestions);
     } else {
         document.getElementById(selection).parentNode.classList.add('bg-danger');
         document.getElementById(idOfRightAnswer).parentNode.classList.add('bg-success');
+        audio_fail.play();
     }
     document.getElementById('next-button').disabled = false;
+}
+
+function rightQuestinSelected(selectedQuestionNumber, question){
+    return selectedQuestionNumber == question['right-answer']
 }
 
 function nextQuestion() {
@@ -121,4 +112,43 @@ function showQuestionNumber(index) {
 
 function showRightAnsweredQuestions(rightQuestions){
 document.getElementById('rightAnswers').innerHTML = rightQuestions;
+}
+
+function startGame(){
+    currentQuestion = 0;
+    rightQuestions = 0;
+    document.getElementById('rightAnswers').innerHTML = rightQuestions;
+    document.getElementById('quizEnded').classList.add('d-none');
+    document.getElementById('quizStandard').classList.remove('d-none');
+    document.getElementById('progress').classList.remove('d-none');
+    document.getElementById('currentQuestionNumber').innerHTML = 1;
+    init();
+}
+
+function showEndScreen(){
+    document.getElementById('quizEnded').classList.remove('d-none');
+    document.getElementById('quizStandard').classList.add('d-none');
+    document.getElementById('totalAnswers').innerHTML = questions.length;
+    document.getElementById('progress').classList.add('d-none');
+}
+
+function showPlayScreen(){
+        calculatePercentage();
+        
+        let question = questions[currentQuestion];
+
+        document.getElementById('question').innerHTML = question['question'];
+        document.getElementById('answer1').innerHTML = question['answer-1'];
+        document.getElementById('answer2').innerHTML = question['answer-2'];
+        document.getElementById('answer3').innerHTML = question['answer-3'];
+        document.getElementById('answer4').innerHTML = question['answer-4'];
+}
+
+function calculatePercentage(){
+    let percent = currentQuestion / questions.length;
+        // Math.round wird in diesem Beispiel nicht benötigt, aber wenn sich die Anzahl der Fragen ändern würde:
+        percent = Math.round( percent * 100);
+        document.getElementById('progress-bar').innerHTML = `${percent} %`
+        document.getElementById('progress-bar').style = `width: ${percent}%`
+
 }
